@@ -6,7 +6,7 @@
 #    By: kmacquet <kmacquet@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/07 16:53:03 by kmacquet          #+#    #+#              #
-#    Updated: 2021/06/09 12:48:26 by kmacquet         ###   ########.fr        #
+#    Updated: 2021/06/09 15:34:42 by kmacquet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ NAME1 = client
 NAME2 = server
 SRCS1 = srcs/client.c
 SRCS2 = srcs/server.c
-SRCS1BON = srcs/client_bonus.c
-SRCS2BON = srcs/server_bonus.c
+SRCS1BON = srcs/client_bonus.c srcs/utils.c
+SRCS2BON = srcs/server_bonus.c srcs/utils.c
 RM = rm -rf
 
 ifdef WITH_BONUS

@@ -6,7 +6,7 @@
 /*   By: kmacquet <kmacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 17:03:16 by kmacquet          #+#    #+#             */
-/*   Updated: 2021/06/09 10:10:52 by kmacquet         ###   ########.fr       */
+/*   Updated: 2021/06/09 15:28:43 by kmacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,14 @@ void	translate_signal(int d)
 	}
 }
 
-void	signal_handler(int sig)
+void	get_pid(int sig, siginfo_t *info, void *context)
 {
+	(void)context;
 	if (sig == SIGUSR1)
 		translate_signal(0);
 	if (sig == SIGUSR2)
 		translate_signal(1);
+	kill(info->si_pid, SIGUSR2);
 }
 
 int	main (void)
@@ -59,7 +61,8 @@ int	main (void)
 	pid = getpid();
 	ft_putnum(pid);
 	write(STDOUT_FILENO, "\n", 1);
-	sa.sa_handler = signal_handler;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = get_pid;
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGUSR1);
 	sigaddset(&sa.sa_mask, SIGUSR2);
