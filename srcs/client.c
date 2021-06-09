@@ -6,7 +6,7 @@
 /*   By: kmacquet <kmacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 17:03:12 by kmacquet          #+#    #+#             */
-/*   Updated: 2021/06/09 15:33:53 by kmacquet         ###   ########.fr       */
+/*   Updated: 2021/06/09 16:50:11 by kmacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,45 +14,29 @@
 
 static int	g_r = 0;
 
-void	send_signal(char *tab, int pid)
+void	send_signal(char c, int pid)
 {
 	int	j;
 
-	j = __CHAR_BIT__ - 1;
-	while (j >= 0)
+	j = 0;
+	while (j < 8)
 	{
 		usleep(100);
 		g_r = 0;
-		if (tab[j] == '0')
-			if (kill(pid, SIGUSR1) == -1)
-				ft_error("Error: pid invalid\n", tab);
-		if (tab[j] == '1')
+		if ((c >> j) & 1)
+		{
 			if (kill(pid, SIGUSR2) == -1)
-				ft_error("Error: pid invalid\n", tab);
-		j--;
+				ft_error("Error: pid invalid\n");
+		}
+		else
+		{
+			if (kill(pid, SIGUSR1) == -1)
+				ft_error("Error: pid invalid\n");
+		}
+		j++;
 		while (!g_r)
 			;
 	}
-}
-
-char	*char_to_binary(char c, int pid)
-{
-	char	*tab;
-	int		i;
-
-	i = __CHAR_BIT__ - 1;
-	tab = malloc(__CHAR_BIT__ + 1);
-	if (!tab)
-		ft_error("Error : malloc failed", NULL);
-	tab[8] = 0;
-	while (i >= 0)
-	{
-		tab[i] = (c % 2) + '0';
-		c /= 2;
-		i--;
-	}
-	send_signal(tab, pid);
-	return (tab);
 }
 
 void	to_one(int i)
@@ -64,27 +48,25 @@ void	to_one(int i)
 int	main(int ac, char **av)
 {
 	int		j;
-	char	*tab;
 	int		pid;
 
-	j = 0;
+	j = -1;
 	g_r = 0;
 	signal(SIGUSR2, to_one);
 	if (ac != 3)
-		ft_error("Error : invalid arguments\n", NULL);
+		ft_error("Error : invalid arguments\n");
 	pid = ft_atoi(av[1]);
-	while (*av[2])
-		tab = char_to_binary(*av[2]++, pid);
+	while (av[2][++j])
+		send_signal(av[2][j], pid);
 	j = 0;
 	while (j++ < 8)
 	{
 		usleep(100);
 		g_r = 0;
 		if (kill(pid, SIGUSR1) == -1)
-			ft_error("Error: pid invalid\n", tab);
+			ft_error("Error: pid invalid\n");
 		while (!g_r)
 			;
 	}
-	free(tab);
 	return (0);
 }

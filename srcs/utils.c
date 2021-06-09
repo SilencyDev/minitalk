@@ -6,7 +6,7 @@
 /*   By: kmacquet <kmacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/09 15:23:14 by kmacquet          #+#    #+#             */
-/*   Updated: 2021/06/09 15:29:48 by kmacquet         ###   ########.fr       */
+/*   Updated: 2021/06/09 16:33:07 by kmacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,9 @@ int	ft_strlen(char *s)
 	return (i);
 }
 
-void	ft_free(char *tab)
-{
-	free(tab);
-	tab = NULL;
-}
-
-void	ft_error(char *s, char *tab)
+void	ft_error(char *s)
 {
 	write(1, s, ft_strlen(s));
-	ft_free(tab);
 	exit(1);
 }
 
