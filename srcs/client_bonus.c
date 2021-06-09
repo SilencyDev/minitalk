@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmacquet <kmacquet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/07 17:03:12 by kmacquet          #+#    #+#             */
-/*   Updated: 2021/06/09 11:10:39 by kmacquet         ###   ########.fr       */
+/*   Updated: 2021/06/09 14:31:55 by kmacquet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
+
+static int	g_r = 0;
 
 int	ft_atoi(char *str)
 {
@@ -50,6 +52,11 @@ char	*char_to_binary(char c)
 	return (tab);
 }
 
+void	to_one()
+{
+	g_r = 1;
+}
+
 void	send_signal(char *tab, int pid)
 {
 	int	j;
@@ -57,17 +64,15 @@ void	send_signal(char *tab, int pid)
 	j = __CHAR_BIT__ - 1;
 	while (j >= 0)
 	{
+		usleep(100);
+		g_r = 0;
 		if (tab[j] == '0')
-		{
 			kill(pid, SIGUSR1);
-			usleep(325);
-		}
 		if (tab[j] == '1')
-		{
 			kill(pid, SIGUSR2);
-			usleep(325);
-		}
 		j--;
+		while (!g_r)
+			;
 	}
 }
 
@@ -78,8 +83,10 @@ int	main(int ac, char **av)
 	int		pid;
 
 	j = 0;
+	g_r = 0;
 	if (ac == 3)
 	{
+		signal(SIGUSR2, to_one);
 		pid = ft_atoi(av[1]);
 		while (*av[2])
 		{
@@ -87,13 +94,15 @@ int	main(int ac, char **av)
 			tab = char_to_binary(*av[2]++);
 			printf("%s\n", tab);
 			send_signal(tab, pid);
-			free(tab);
 		}
 		j = 0;
 		while (j++ < 8)
 		{
+			usleep(100);
+			g_r = 0;
 			kill(pid, SIGUSR1);
-			usleep(325);
+			while (!g_r)
+				;
 		}
 	}
 	return (0);
